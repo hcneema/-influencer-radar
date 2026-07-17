@@ -1,0 +1,26 @@
+platforms:
+  youtube:
+    enabled: true
+    search_order: relevance
+    max_results: 2          # 2 results per keyword = 4 videos max
+
+  reddit:
+    enabled: true
+    subreddits:
+      - fpga
+    sort: relevance
+    time_filter: year
+    max_results: 2          # 2 results per keyword per subreddit = 4 posts max
+
+output:
+  format: both
+  directory: reports/
+
+classifier:
+  ambiguity_threshold: 0.4
+
+influencer:
+  min_posts_threshold: 1    # show everyone, even single-post authors
+
+topic_expander:
+  num_queries: 2

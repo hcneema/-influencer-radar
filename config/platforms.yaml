@@ -1,0 +1,33 @@
+platforms:
+  youtube:
+    enabled: true
+    search_order: relevance   # relevance | date | viewCount
+    max_results: 50           # per keyword (YouTube API max per call is 50)
+
+  reddit:
+    enabled: true
+    subreddits:
+      - fpga
+      - xilinx
+      - ECE
+      - hardware
+      - embedded
+      - FPGA
+      - verilog
+      - electronics
+    sort: relevance           # relevance | hot | new | top
+    time_filter: all          # all | year | month | week
+    max_results: 100          # per keyword per subreddit
+
+output:
+  format: both               # json | markdown | both
+  directory: reports/
+
+classifier:
+  ambiguity_threshold: 0.4   # posts with confidence below this are kept as rule-based results
+
+influencer:
+  min_posts_threshold: 2     # minimum topic posts to qualify as influencer
+
+topic_expander:
+  num_queries: 12            # number of lines from the topic file used as search queries

@@ -1,0 +1,49 @@
+{
+  "title": "Influencer Radar",
+  "description": "Social media posts scraped from YouTube and Reddit, classified by topic relevance and engagement",
+  "databases": {
+    "hls_research": {
+      "tables": {
+        "posts": {
+          "description": "Scraped posts from YouTube and Reddit",
+          "sort_desc": "published_at"
+        },
+        "authors": {
+          "description": "Content creators and their subscriber/karma counts"
+        },
+        "classifications": {
+          "description": "Rule-based classifications for each post"
+        },
+        "runs": {
+          "description": "History of scrape runs"
+        }
+      }
+    }
+  },
+  "queries": {
+    "top_influencers": {
+      "title": "Top Influencers by Engagement",
+      "sql": "SELECT a.author_name, a.platform, a.author_type, a.subscriber_count, COUNT(p.post_id) AS posts, SUM(p.views + p.likes) AS total_engagement FROM authors a JOIN posts p USING (platform, author_id) GROUP BY a.platform, a.author_id ORDER BY total_engagement DESC LIMIT 50"
+    },
+    "deep_technical_posts": {
+      "title": "Deep Technical Posts",
+      "sql": "SELECT p.title, p.url, p.views, p.likes, c.content_type, c.sentiment, a.author_name FROM posts p JOIN classifications c USING (platform, post_id) JOIN authors a USING (platform, author_id) WHERE c.technical_depth = 'deep-technical' ORDER BY p.views DESC"
+    },
+    "all_classified_posts": {
+      "title": "All Posts with Classifications",
+      "sql": "SELECT p.title, p.url, p.platform, a.author_name, a.author_type, p.views, p.likes, p.published_at, c.technical_depth, c.content_type, c.sentiment, c.confidence FROM posts p JOIN classifications c USING (platform, post_id) JOIN authors a USING (platform, author_id) ORDER BY p.published_at DESC"
+    },
+    "sentiment_breakdown": {
+      "title": "Sentiment by Platform",
+      "sql": "SELECT p.platform, c.sentiment, COUNT(*) AS count FROM classifications c JOIN posts p USING (platform, post_id) GROUP BY p.platform, c.sentiment ORDER BY p.platform, count DESC"
+    },
+    "official_vs_community": {
+      "title": "Official vs Community Authors",
+      "sql": "SELECT a.author_type, a.platform, COUNT(DISTINCT a.author_id) AS authors, COUNT(p.post_id) AS posts FROM authors a LEFT JOIN posts p USING (platform, author_id) GROUP BY a.author_type, a.platform ORDER BY a.author_type, a.platform"
+    },
+    "run_history": {
+      "title": "Scrape Run History",
+      "sql": "SELECT id, run_at, topic_file, posts_scraped, influencers_found, platforms FROM runs ORDER BY run_at DESC"
+    }
+  }
+}

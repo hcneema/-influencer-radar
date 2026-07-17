@@ -1,0 +1,18 @@
+# HLS Research Topic
+# Lines starting with # are comments and are ignored.
+# You can write keywords, phrases, sentences, or paragraphs.
+# Be as specific or broad as you like — Claude will generate optimized search queries from this.
+
+Vivado HLS and Vitis HLS — AMD/Xilinx high level synthesis tools for FPGA development.
+People teaching, reviewing, demonstrating, or complaining about HLS tools.
+
+Technical content:
+- #pragma HLS directives (pipeline, unroll, array_partition, dataflow, interface)
+- Synthesis reports, latency constraints, initiation interval (II) optimization
+- ap_fixed, ap_int, hls_stream data types
+- HLS IP cores, HLS testbenches, co-simulation
+- Resource utilization: DSP, LUT, BRAM usage after HLS synthesis
+
+Beginner tutorials and expert showcases of HLS-based IP cores.
+Comparisons of HLS vs HDL (VHDL/Verilog) workflows.
+Academic papers or industry posts about high level synthesis for FPGAs.

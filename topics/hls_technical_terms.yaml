@@ -1,0 +1,55 @@
+# Domain-specific technical vocabulary for the classifier.
+# The rule-based classifier uses these to detect "deep-technical" posts.
+# Edit this file when you change the research topic.
+#
+# Each entry is a regex pattern (Python re syntax, case-insensitive).
+# A post matching 3+ patterns is classified as "deep-technical".
+# 1-2 matches = "general-technical". 0 = "non-technical".
+
+technical_patterns:
+  - '#pragma\s+HLS'
+  - '\bII\s*[=<>]\s*\d+'       # initiation interval
+  - '\bDSP\d*\b'
+  - '\bLUT\s*utilization'
+  - '\bsynthesis\s+report'
+  - '\bap_fixed\b'
+  - '\bap_int\b'
+  - '\bap_uint\b'
+  - '\bhls_stream\b'
+  - '\barray_partition\b'
+  - '\bdataflow\b'
+  - '\bpipeline\s+directive'
+  - '\bunroll\s+factor'
+  - '\binterface\s+pragma'
+  - '\bco[_-]?simulation\b'
+  - '\blatency\s+constraint'
+  - '\binitiation\s+interval'
+  - '\btcl\s+script'
+  - '\bvivado\s+hls\b'
+  - '\bvitis\s+hls\b'
+  - '\bBRAM\b'
+  - '\bresource\s+utilization'
+
+# Example: RISC-V topic — replace the above with:
+# technical_patterns:
+#   - '\bRV32[A-Z]*\b'
+#   - '\bRV64[A-Z]*\b'
+#   - '\bVexRiscv\b'
+#   - '\bOpenOCD\b'
+#   - '\bmachine\s+mode\b'
+#   - '\bCSR\s+register'
+#   - '\bprivilege\s+level'
+#   - '\bISA\s+extension'
+#   - '\bfemtorv\b'
+#   - '\bpicoRV\b'
+
+# Example: LLM/AI topic — replace with:
+# technical_patterns:
+#   - '\battention\s+mechanism'
+#   - '\btransformer\s+architecture'
+#   - '\bfine[_-]?tuning\b'
+#   - '\bRAG\b'
+#   - '\bperplexity\b'
+#   - '\bquantization\b'
+#   - '\bLoRA\b'
+#   - '\bembedding\s+model'

@@ -1,0 +1,27 @@
+# Known official channels and accounts.
+# Posts from these authors will be tagged author_type=official in the DB and reports.
+# Everything else is tagged author_type=community.
+#
+# YouTube: use the channel ID (starts with UC...), found in the channel URL.
+# Reddit:  use the exact username (case-insensitive match).
+
+youtube:
+  - id: UCZRmgCNaKkFWFxFJBpBQqYg
+    name: AMD (official)
+  - id: UCkiZ5iBxJmQo5t_LlnXf_0Q
+    name: Xilinx (official, now AMD)
+  - id: UC_7eBnRyBqSWZTMSJAf6u3w
+    name: AMD Developer Central
+  - id: UCP9Sab3Kd7msZZTLHCFCMjQ
+    name: AMD HLS / Vitis
+
+reddit:
+  - username: AMD
+  - username: Xilinx
+  - username: amd
+  - username: AMDOfficial
+  - username: XilinxInc
+
+# Add more as you discover them during research.
+# To find a YouTube channel ID: go to the channel page, view source, search for "channelId".
+# Or use: https://commentpicker.com/youtube-channel-id.php
