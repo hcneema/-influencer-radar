@@ -34,7 +34,7 @@ topics/hls_topic.txt          config/platforms.yaml
                    ▼
         ┌──────────────────────┐
         │       Storage         │
-        │  db/hls_research.db   │  SQLite — 4 tables
+        │  db/influencer_radar.db   │  SQLite — 4 tables
         │  raw_cache/*.jsonl    │  append-only backup per run
         └──────────┬───────────┘
                    │
@@ -95,7 +95,7 @@ hls-research/
     trends_report.py          Trend tables in Markdown
 
   db/
-    hls_research.db           SQLite database (created on first run)
+    influencer_radar.db           SQLite database (created on first run)
   raw_cache/                  JSONL backup files, one per scrape run
   reports/                    Generated reports
 ```
@@ -134,7 +134,7 @@ python check_keys.py
 Expected output:
 ```
 =======================================================
-  HLS Research Tool — API Key Check
+  Influencer Radar — API Key Check
 =======================================================
 YOUTUBE_API_KEY  OK  — sample result: "Vivado HLS Tutorial - #pragma Pipeline"
 REDDIT credentials  OK  — sample result: "Why does my HLS synthesis fail on II=1?"
@@ -287,7 +287,7 @@ Found 47 influencers
 JSON report:    reports/hls_topic_influencers_20260716.json
 Markdown report: reports/hls_topic_report_20260716.md
 Trends report:  reports/hls_topic_trends_20260716.md
-Database:       db/hls_research.db
+Database:       db/influencer_radar.db
 ────────────────────────── Done ──────────────────────────────────
 ```
 
@@ -343,7 +343,7 @@ Database:       db/hls_research.db
 ### Markdown report structure (`reports/hls_topic_report_*.md`)
 
 ```markdown
-# HLS Influencer Research Report
+# Influencer Research Report
 
 **Topic:** `hls_topic`
 **Generated:** 2026-07-16 18:45 UTC
@@ -573,7 +573,7 @@ For a browser-based interface with table browsing, filtering, and a live SQL edi
 
 ```bash
 pip install datasette
-python -m datasette db/hls_research.db --metadata datasette_metadata.json --open
+python -m datasette db/influencer_radar.db --metadata datasette_metadata.json --open
 ```
 
 This opens `http://localhost:8001` in your browser. Keep the terminal open while using it; press `Ctrl+C` to stop.
@@ -582,11 +582,11 @@ This opens `http://localhost:8001` in your browser. Keep the terminal open while
 
 | What you want | Where to go |
 |---|---|
-| Browse all posts | `localhost:8001/hls_research/posts` |
-| Browse authors | `localhost:8001/hls_research/authors` |
-| Browse classifications | `localhost:8001/hls_research/classifications` |
-| Run pre-built queries | `localhost:8001/hls_research` → scroll to **Queries** |
-| Write custom SQL | `localhost:8001/hls_research` → **Custom SQL query** (top right) |
+| Browse all posts | `localhost:8001/influencer_radar/posts` |
+| Browse authors | `localhost:8001/influencer_radar/authors` |
+| Browse classifications | `localhost:8001/influencer_radar/classifications` |
+| Run pre-built queries | `localhost:8001/influencer_radar` → scroll to **Queries** |
+| Write custom SQL | `localhost:8001/influencer_radar` → **Custom SQL query** (top right) |
 
 ### Pre-built queries (available in the UI under Queries)
 
@@ -690,7 +690,7 @@ Posts from listed accounts are tagged `author_type=official` in the DB and appea
 Direct SQL is always available for custom queries:
 
 ```bash
-sqlite3 db/hls_research.db
+sqlite3 db/influencer_radar.db
 ```
 
 ```sql

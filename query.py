@@ -27,7 +27,7 @@ from rich import box
 
 load_dotenv()
 console = Console()
-DEFAULT_DB = Path("db/hls_research.db")
+DEFAULT_DB = Path("db/influencer_radar.db")
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
   "title": "Influencer Radar",
   "description": "Social media posts scraped from YouTube and Reddit, classified by topic relevance and engagement",
   "databases": {
-    "hls_research": {
+    "influencer_radar": {
       "tables": {
         "posts": {
           "description": "Scraped posts from YouTube and Reddit",
@@ -44,6 +44,131 @@
     "run_history": {
       "title": "Scrape Run History",
       "sql": "SELECT id, run_at, topic_file, posts_scraped, influencers_found, platforms FROM runs ORDER BY run_at DESC"
+    }
+  },
+  "plugins": {
+    "datasette-dashboards": {
+      "influencer-overview": {
+        "title": "Influencer Overview",
+        "description": "At-a-glance summary of scraped content, top creators, and content breakdown",
+        "layout": [
+          ["total-posts", "total-authors", "total-official", "total-community"],
+          ["top-influencers-bar", "top-influencers-bar"],
+          ["sentiment-chart", "depth-chart", "content-type-chart"],
+          ["platform-split", "platform-split", "recent-posts", "recent-posts"]
+        ],
+        "charts": {
+          "total-posts": {
+            "title": "Total Posts",
+            "db": "influencer_radar",
+            "query": "SELECT COUNT(*) AS value, 'Total posts scraped' AS label FROM posts",
+            "library": "metric",
+            "display": {"field": "value", "prefix": "", "suffix": " posts"}
+          },
+          "total-authors": {
+            "title": "Unique Creators",
+            "db": "influencer_radar",
+            "query": "SELECT COUNT(DISTINCT author_id) AS value FROM authors",
+            "library": "metric",
+            "display": {"field": "value", "prefix": "", "suffix": " creators"}
+          },
+          "total-official": {
+            "title": "Official Accounts",
+            "db": "influencer_radar",
+            "query": "SELECT COUNT(*) AS value FROM authors WHERE author_type = 'official'",
+            "library": "metric",
+            "display": {"field": "value", "prefix": "", "suffix": " official"}
+          },
+          "total-community": {
+            "title": "Community Creators",
+            "db": "influencer_radar",
+            "query": "SELECT COUNT(*) AS value FROM authors WHERE author_type = 'community'",
+            "library": "metric",
+            "display": {"field": "value", "prefix": "", "suffix": " community"}
+          },
+          "top-influencers-bar": {
+            "title": "Top 10 Creators by Total Engagement (Views + Likes)",
+            "db": "influencer_radar",
+            "query": "SELECT a.author_name AS Creator, a.platform AS Platform, SUM(p.views + p.likes) AS Engagement FROM authors a JOIN posts p USING (platform, author_id) GROUP BY a.platform, a.author_id ORDER BY Engagement DESC LIMIT 10",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "Creator", "type": "nominal", "sort": "-y", "axis": {"labelAngle": -30}},
+                "y": {"field": "Engagement", "type": "quantitative"},
+                "color": {"field": "Platform", "type": "nominal", "scale": {"domain": ["youtube", "reddit"], "range": ["#FF0000", "#FF4500"]}}
+              }
+            }
+          },
+          "sentiment-chart": {
+            "title": "Post Sentiment",
+            "db": "influencer_radar",
+            "query": "SELECT sentiment AS Sentiment, COUNT(*) AS Posts FROM classifications GROUP BY sentiment ORDER BY Posts DESC",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "arc", "tooltip": true},
+              "encoding": {
+                "theta": {"field": "Posts", "type": "quantitative"},
+                "color": {"field": "Sentiment", "type": "nominal", "scale": {"domain": ["positive", "neutral", "negative"], "range": ["#2ecc71", "#95a5a6", "#e74c3c"]}}
+              }
+            }
+          },
+          "depth-chart": {
+            "title": "Technical Depth",
+            "db": "influencer_radar",
+            "query": "SELECT technical_depth AS Depth, COUNT(*) AS Posts FROM classifications GROUP BY technical_depth ORDER BY Posts DESC",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "arc", "tooltip": true},
+              "encoding": {
+                "theta": {"field": "Posts", "type": "quantitative"},
+                "color": {"field": "Depth", "type": "nominal", "scale": {"domain": ["deep-technical", "general-technical", "non-technical"], "range": ["#2c3e50", "#3498db", "#bdc3c7"]}}
+              }
+            }
+          },
+          "content-type-chart": {
+            "title": "Content Type",
+            "db": "influencer_radar",
+            "query": "SELECT content_type AS Type, COUNT(*) AS Posts FROM classifications GROUP BY content_type ORDER BY Posts DESC",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "Posts", "type": "quantitative"},
+                "y": {"field": "Type", "type": "nominal", "sort": "-x"},
+                "color": {"value": "#3498db"}
+              }
+            }
+          },
+          "platform-split": {
+            "title": "Posts by Platform",
+            "db": "influencer_radar",
+            "query": "SELECT platform AS Platform, COUNT(*) AS Posts FROM posts GROUP BY platform",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "arc", "tooltip": true},
+              "encoding": {
+                "theta": {"field": "Posts", "type": "quantitative"},
+                "color": {"field": "Platform", "type": "nominal", "scale": {"domain": ["youtube", "reddit"], "range": ["#FF0000", "#FF4500"]}}
+              }
+            }
+          },
+          "recent-posts": {
+            "title": "10 Most Recent Posts",
+            "db": "influencer_radar",
+            "query": "SELECT p.title AS Title, a.author_name AS Creator, p.platform AS Platform, p.views AS Views, p.published_at AS Published FROM posts p JOIN authors a USING (platform, author_id) ORDER BY p.published_at DESC LIMIT 10",
+            "library": "vega-lite",
+            "display": {
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "Views", "type": "quantitative"},
+                "y": {"field": "Title", "type": "nominal", "sort": "-x", "axis": {"labelLimit": 200}},
+                "color": {"field": "Platform", "type": "nominal", "scale": {"domain": ["youtube", "reddit"], "range": ["#FF0000", "#FF4500"]}}
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

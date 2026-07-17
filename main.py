@@ -59,8 +59,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--db",
         type=Path,
-        default=Path("db/hls_research.db"),
-        help="SQLite database path (default: db/hls_research.db)",
+        default=Path("db/influencer_radar.db"),
+        help="SQLite database path (default: db/influencer_radar.db)",
     )
     parser.add_argument(
         "--dry-run",
