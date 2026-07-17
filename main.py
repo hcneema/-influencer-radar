@@ -148,13 +148,18 @@ def main() -> None:
     # --- Topic expansion ---
     from topic_expander import expand_topic
 
-    queries = expand_topic(args.topic, num_queries=config.topic_expander.num_queries)
-    console.print(f"Using {len(queries)} queries from topic file: [bold]{args.topic}[/bold]")
+    queries, web_urls = expand_topic(args.topic, num_queries=config.topic_expander.num_queries)
+    console.print(f"Using {len(queries)} queries and {len(web_urls)} websites from: [bold]{args.topic}[/bold]")
 
     if args.verbose or args.dry_run:
-        console.print("\n[bold]Search queries:[/bold]")
-        for q in queries:
-            console.print(f"  • {q}")
+        if queries:
+            console.print("\n[bold]Search queries:[/bold]")
+            for q in queries:
+                console.print(f"  • {q}")
+        if web_urls:
+            console.print("\n[bold]Websites/feeds:[/bold]")
+            for u in web_urls:
+                console.print(f"  • {u}")
 
     if args.dry_run:
         console.print("\n[yellow]Dry run complete. No APIs were called.[/yellow]")
@@ -205,6 +210,14 @@ def main() -> None:
             rd_posts = rd.scrape_all_keywords(queries)
             all_raw.extend(rd_posts)
             console.print(f"Reddit: {len(rd_posts)} posts found")
+
+        if web_urls:
+            console.print("Scraping websites/feeds...")
+            from scrapers.web_scraper import WebScraper
+            ws = WebScraper(config, since=since_dt)
+            web_posts = ws.scrape_all_keywords(web_urls)
+            all_raw.extend(web_posts)
+            console.print(f"Web: {len(web_posts)} posts found")
 
         new_count = 0
         for post in all_raw:
