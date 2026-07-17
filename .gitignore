@@ -8,3 +8,9 @@ __pycache__/
 .DS_Store
 *.egg-info/
 .claude/
+
+# User topic files — keep only the provided examples
+topics/*
+!topics/hls_topic.txt
+!topics/hls_technical_terms.yaml
+!topics/test_run.txt
