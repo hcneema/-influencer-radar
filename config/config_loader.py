@@ -57,9 +57,9 @@ class AppConfig:
     classifier: ClassifierConfig
     influencer: InfluencerConfig
     topic_expander: TopicExpanderConfig
-    tiktok: ApifyPlatformConfig = None
-    twitter: ApifyPlatformConfig = None
-    instagram: ApifyPlatformConfig = None
+    tiktok: ApifyPlatformConfig | None = None
+    twitter: ApifyPlatformConfig | None = None
+    instagram: ApifyPlatformConfig | None = None
     # injected from environment by main.py, not from YAML
     youtube_api_key: str = ""
     reddit_client_id: str = ""

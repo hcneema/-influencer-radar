@@ -67,8 +67,7 @@ _ANNOUNCEMENT = [re.compile(p, re.I) for p in [
     r"\bupdate\s+\d",
     r"\bversion\s+\d",
     r"\bnow\s+available\b",
-    r"\bAMD\s+releases?\b",
-    r"\bXilinx\s+releases?\b",
+    r"\breleases?\s+v?\d",
 ]]
 
 _SHOWCASE = [re.compile(p, re.I) for p in [

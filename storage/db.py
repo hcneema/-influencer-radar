@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from models import ClassifiedPost, RawPost
@@ -109,7 +109,7 @@ def upsert_author(conn: sqlite3.Connection, post: RawPost, author_type: str = "c
             post.author_name,
             post.subscriber_count,
             author_type,
-            datetime.utcnow().isoformat(),
+            datetime.now(timezone.utc).isoformat(),
         ),
     )
 
@@ -163,7 +163,7 @@ def upsert_classification(conn: sqlite3.Connection, cp: ClassifiedPost) -> None:
             cp.raw.platform, cp.raw.post_id,
             cp.technical_depth, cp.content_type, cp.sentiment,
             cp.classification_method, cp.confidence,
-            datetime.utcnow().isoformat(),
+            datetime.now(timezone.utc).isoformat(),
         ),
     )
 
@@ -180,6 +180,15 @@ def get_all_classified_posts(conn: sqlite3.Connection) -> list[ClassifiedPost]:
     return [_row_to_classified_post(r) for r in rows]
 
 
+def get_all_posts(conn: sqlite3.Connection) -> list[RawPost]:
+    rows = conn.execute(
+        """SELECT p.*, a.author_name, a.subscriber_count, a.author_type
+           FROM posts p
+           LEFT JOIN authors a ON p.platform=a.platform AND p.author_id=a.author_id"""
+    ).fetchall()
+    return [_row_to_raw_post(r) for r in rows]
+
+
 def get_posts_without_classification(conn: sqlite3.Connection) -> list[RawPost]:
     rows = conn.execute(
         """SELECT p.*, a.author_name, a.subscriber_count, a.author_type
@@ -192,7 +201,7 @@ def get_posts_without_classification(conn: sqlite3.Connection) -> list[RawPost]:
 
 
 def _row_to_raw_post(r: sqlite3.Row) -> RawPost:
-    pub = datetime.fromisoformat(r["published_at"]) if r["published_at"] else datetime.utcnow()
+    pub = datetime.fromisoformat(r["published_at"]) if r["published_at"] else datetime.now(timezone.utc)
     keys = r.keys()
     return RawPost(
         platform=r["platform"], post_id=r["post_id"], author_id=r["author_id"],

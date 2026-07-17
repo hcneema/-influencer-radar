@@ -63,6 +63,10 @@ def cmd_summary(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
         "Community authors":  conn.execute("SELECT COUNT(*) FROM authors WHERE author_type='community'").fetchone()[0],
         "YouTube posts":      conn.execute("SELECT COUNT(*) FROM posts WHERE platform='youtube'").fetchone()[0],
         "Reddit posts":       conn.execute("SELECT COUNT(*) FROM posts WHERE platform='reddit'").fetchone()[0],
+        "TikTok posts":       conn.execute("SELECT COUNT(*) FROM posts WHERE platform='tiktok'").fetchone()[0],
+        "Twitter/X posts":    conn.execute("SELECT COUNT(*) FROM posts WHERE platform='twitter'").fetchone()[0],
+        "Instagram posts":    conn.execute("SELECT COUNT(*) FROM posts WHERE platform='instagram'").fetchone()[0],
+        "Web posts":          conn.execute("SELECT COUNT(*) FROM posts WHERE platform NOT IN ('youtube','reddit','tiktok','twitter','instagram')").fetchone()[0],
         "Scrape runs":        conn.execute("SELECT COUNT(*) FROM runs").fetchone()[0],
     }
 
@@ -110,7 +114,7 @@ def cmd_influencers(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
             params.append(val)
 
     since_w, since_p = since_clause(args.since)
-    where_parts.append(since_w.lstrip("AND ") or "1=1")
+    where_parts.append(since_w[4:] if since_w.startswith("AND ") else "1=1")
     params.extend(since_p)
 
     where = " AND ".join(where_parts)
@@ -200,7 +204,7 @@ def cmd_posts(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
 
     since_w, since_p = since_clause(args.since)
     if since_w:
-        where_parts.append(since_w.lstrip("AND "))
+        where_parts.append(since_w[4:] if since_w.startswith("AND ") else since_w)
         params.extend(since_p)
 
     where = " AND ".join(where_parts)
@@ -352,6 +356,9 @@ def cmd_export(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
     if args.platform:
         where_parts.append("p.platform = ?")
         params.append(args.platform)
+    if getattr(args, "type", None):
+        where_parts.append("a.author_type = ?")
+        params.append(args.type)
     if args.category:
         dim, val = _parse_category(args.category)
         if dim:
@@ -360,7 +367,7 @@ def cmd_export(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
 
     since_w, since_p = since_clause(args.since)
     if since_w:
-        where_parts.append(since_w.lstrip("AND "))
+        where_parts.append(since_w[4:] if since_w.startswith("AND ") else since_w)
         params.extend(since_p)
 
     where = " AND ".join(where_parts)
@@ -430,7 +437,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # influencers
     p_inf = sub.add_parser("influencers", help="Ranked influencer list")
-    p_inf.add_argument("--platform", choices=["youtube", "reddit"])
+    p_inf.add_argument("--platform", choices=["youtube", "reddit", "tiktok", "twitter", "instagram"])
     p_inf.add_argument("--type", choices=["official", "community"])
     p_inf.add_argument("--category", metavar="CATEGORY",
                        help="Filter by category value (e.g. deep-technical, tutorial, negative)")
@@ -442,7 +449,7 @@ def build_parser() -> argparse.ArgumentParser:
     # posts
     p_posts = sub.add_parser("posts", help="Browse individual posts")
     p_posts.add_argument("--author", metavar="NAME")
-    p_posts.add_argument("--platform", choices=["youtube", "reddit"])
+    p_posts.add_argument("--platform", choices=["youtube", "reddit", "tiktok", "twitter", "instagram"])
     p_posts.add_argument("--type", choices=["official", "community"])
     p_posts.add_argument("--sentiment", choices=["positive", "negative", "neutral"])
     p_posts.add_argument("--category", metavar="CATEGORY")
@@ -466,7 +473,8 @@ def build_parser() -> argparse.ArgumentParser:
     # export
     p_ex = sub.add_parser("export", help="Export filtered posts to JSON")
     p_ex.add_argument("--author", metavar="NAME")
-    p_ex.add_argument("--platform", choices=["youtube", "reddit"])
+    p_ex.add_argument("--platform", choices=["youtube", "reddit", "tiktok", "twitter", "instagram"])
+    p_ex.add_argument("--type", choices=["official", "community"])
     p_ex.add_argument("--category", metavar="CATEGORY")
     p_ex.add_argument("--since", metavar="DATE")
     p_ex.add_argument("--out", default="export.json", metavar="FILE")

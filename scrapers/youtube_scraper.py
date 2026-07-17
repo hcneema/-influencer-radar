@@ -152,7 +152,7 @@ class YouTubeScraper(BaseScraper):
         try:
             published_at = datetime.fromisoformat(pub_str.replace("Z", "+00:00"))
         except (ValueError, AttributeError):
-            published_at = datetime.utcnow()
+            published_at = datetime.now(timezone.utc)
 
         return RawPost(
             platform="youtube",

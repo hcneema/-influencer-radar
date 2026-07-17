@@ -96,7 +96,7 @@ class RedditScraper(BaseScraper):
             title=submission.title,
             body=submission.selftext or "",
             url=f"https://www.reddit.com{submission.permalink}",
-            published_at=datetime.utcfromtimestamp(submission.created_utc),
+            published_at=datetime.fromtimestamp(submission.created_utc, tz=timezone.utc),
             views=0,  # Reddit does not expose view counts
             likes=submission.score,
             comments_count=submission.num_comments,

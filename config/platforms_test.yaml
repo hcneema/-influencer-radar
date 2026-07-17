@@ -12,6 +12,15 @@ platforms:
     time_filter: year
     max_results: 2          # 2 results per keyword per subreddit = 4 posts max
 
+tiktok:
+  enabled: false
+
+twitter:
+  enabled: false
+
+instagram:
+  enabled: false
+
 output:
   format: both
   directory: reports/

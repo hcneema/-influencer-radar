@@ -2,7 +2,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -167,13 +167,13 @@ def main() -> None:
         return
 
     # --- Storage setup ---
-    from storage.db import init_db, create_run, update_run, upsert_author, upsert_post, upsert_classification, get_all_classified_posts, get_posts_without_classification
+    from storage.db import init_db, create_run, update_run, upsert_author, upsert_post, upsert_classification, get_all_classified_posts, get_all_posts, get_posts_without_classification
     from storage.jsonl_cache import open_cache, append_post as cache_append
     from config.official_accounts_loader import load_official_accounts, get_author_type
 
     conn = init_db(args.db)
     official_accounts = load_official_accounts(args.config_dir / "official_accounts.yaml")
-    run_at = datetime.utcnow()
+    run_at = datetime.now(timezone.utc)
 
     platforms_used = []
     if config.youtube.enabled and config.youtube_api_key:
@@ -269,7 +269,11 @@ def main() -> None:
     from classifier.categories import classify_post
     from models import ClassifiedPost
 
-    posts_to_classify = get_posts_without_classification(conn)
+    if args.reclassify:
+        from storage.db import get_all_posts
+        posts_to_classify = get_all_posts(conn)
+    else:
+        posts_to_classify = get_posts_without_classification(conn)
     console.print(f"Classifying {len(posts_to_classify)} posts...")
 
     classified: list[ClassifiedPost] = []

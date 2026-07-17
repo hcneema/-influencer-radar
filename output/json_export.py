@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from models import InfluencerProfile
@@ -12,14 +12,14 @@ def export_json(
     topic_slug: str,
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
-    date_str = datetime.utcnow().strftime("%Y%m%d")
+    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
     out_path = output_dir / f"{topic_slug}_influencers_{date_str}.json"
 
     official = [p for p in profiles if p.author_type == "official"]
     community = [p for p in profiles if p.author_type == "community"]
 
     data = {
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "topic": topic_slug,
         "total_influencers": len(profiles),
         "official_sources": [_profile_to_dict(p) for p in official],

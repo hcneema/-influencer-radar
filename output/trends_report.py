@@ -1,5 +1,5 @@
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from analyzer.trends import TrendsReport
@@ -7,13 +7,13 @@ from analyzer.trends import TrendsReport
 
 def export_trends_markdown(report: TrendsReport, output_dir: Path, topic_slug: str) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
-    date_str = datetime.utcnow().strftime("%Y%m%d")
+    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
     out_path = output_dir / f"{topic_slug}_trends_{date_str}.md"
 
     sections = [
         f"# Trends Report\n",
         f"**Topic:** `{topic_slug}`  \n"
-        f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}  \n"
+        f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}  \n"
         f"**Granularity:** {report.granularity}  \n"
         f"**Since:** {report.since or 'all time'}\n",
         _render_volume_table(report),

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from models import InfluencerProfile
@@ -13,7 +13,7 @@ def export_markdown(
     top_n: int = 30,
 ) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
-    date_str = datetime.utcnow().strftime("%Y%m%d")
+    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
     out_path = output_dir / f"{topic_slug}_report_{date_str}.md"
 
     official = [p for p in profiles if p.author_type == "official"]
@@ -22,7 +22,7 @@ def export_markdown(
     sections = [
         f"# Influencer Research Report\n",
         f"**Topic:** `{topic_slug}`  \n"
-        f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}  \n"
+        f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}  \n"
         f"**Official sources:** {len(official)}  \n"
         f"**Community influencers:** {len(community)}\n",
     ]

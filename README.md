@@ -779,9 +779,12 @@ REDDIT_USER_AGENT=influencer-radar/1.0 by YourUsername
 |---|---|---|
 | YouTube | ✅ Supported | Free API, 10k units/day. Transcripts optional. |
 | Reddit | ✅ Supported | Free API via PRAW. |
-| X / Twitter | 🔜 Phase 2 | Requires paid API ($100+/mo for useful search volume) |
+| TikTok | ✅ Supported | Via Apify (`clockworks/tiktok-scraper`). Requires `APIFY_API_TOKEN`. |
+| X / Twitter | ✅ Supported | Via Apify (`apidojo/tweet-scraper`). Requires `APIFY_API_TOKEN`. |
+| Instagram | ✅ Supported | Via Apify (`apify/instagram-scraper`). Requires `APIFY_API_TOKEN`. |
+| Web / RSS | ✅ Supported | Add `https://...` URLs directly in your topic file. |
 | LinkedIn | 🔜 Phase 2 | Restricted API |
-| Instagram / Facebook | ⛔ Blocked | No viable public API; scraping violates ToS |
+| Facebook | ⛔ Blocked | No viable public API; scraping violates ToS |
 
 ---
 
