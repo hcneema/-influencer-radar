@@ -43,6 +43,13 @@ class TopicExpanderConfig:
 
 
 @dataclass
+class ApifyPlatformConfig:
+    enabled: bool
+    max_results: int
+    actor_id: str
+
+
+@dataclass
 class AppConfig:
     youtube: YoutubeConfig
     reddit: RedditConfig
@@ -50,11 +57,15 @@ class AppConfig:
     classifier: ClassifierConfig
     influencer: InfluencerConfig
     topic_expander: TopicExpanderConfig
+    tiktok: ApifyPlatformConfig = None
+    twitter: ApifyPlatformConfig = None
+    instagram: ApifyPlatformConfig = None
     # injected from environment by main.py, not from YAML
     youtube_api_key: str = ""
     reddit_client_id: str = ""
     reddit_client_secret: str = ""
     reddit_user_agent: str = ""
+    apify_api_token: str = ""
 
 
 def load_config(platforms_path: Path = Path("config/platforms.yaml")) -> AppConfig:
@@ -93,6 +104,17 @@ def load_config(platforms_path: Path = Path("config/platforms.yaml")) -> AppConf
         topic_expander=TopicExpanderConfig(
             num_queries=int(te_raw.get("num_queries", 12)),
         ),
+        tiktok=_apify_platform(data.get("tiktok", {}), "clockworks/tiktok-scraper", 50),
+        twitter=_apify_platform(data.get("twitter", {}), "apidojo/tweet-scraper", 50),
+        instagram=_apify_platform(data.get("instagram", {}), "apify/instagram-scraper", 50),
+    )
+
+
+def _apify_platform(raw: dict, default_actor: str, default_max: int) -> ApifyPlatformConfig:
+    return ApifyPlatformConfig(
+        enabled=raw.get("enabled", True),
+        max_results=int(raw.get("max_results", default_max)),
+        actor_id=raw.get("actor_id", default_actor),
     )
 
 

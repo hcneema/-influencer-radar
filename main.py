@@ -127,6 +127,7 @@ def main() -> None:
     config.reddit_client_id = os.getenv("REDDIT_CLIENT_ID", "")
     config.reddit_client_secret = os.getenv("REDDIT_CLIENT_SECRET", "")
     config.reddit_user_agent = os.getenv("REDDIT_USER_AGENT", "influencer-radar/1.0")
+    config.apify_api_token = os.getenv("APIFY_API_TOKEN", "")
 
     console.rule("[bold blue]Influencer Radar")
 
@@ -179,6 +180,12 @@ def main() -> None:
         platforms_used.append("youtube")
     if config.reddit.enabled and config.reddit_client_id:
         platforms_used.append("reddit")
+    if config.tiktok.enabled and config.apify_api_token:
+        platforms_used.append("tiktok")
+    if config.twitter.enabled and config.apify_api_token:
+        platforms_used.append("twitter")
+    if config.instagram.enabled and config.apify_api_token:
+        platforms_used.append("instagram")
 
     run_id = create_run(conn, {
         "run_at": run_at.isoformat(),
@@ -218,6 +225,30 @@ def main() -> None:
             web_posts = ws.scrape_all_keywords(web_urls)
             all_raw.extend(web_posts)
             console.print(f"Web: {len(web_posts)} posts found")
+
+        if "tiktok" in platforms_used:
+            console.print("Scraping TikTok via Apify...")
+            from scrapers.apify_scraper import TikTokScraper
+            tt = TikTokScraper(config, since=since_dt)
+            tt_posts = tt.scrape_all_keywords(queries)
+            all_raw.extend(tt_posts)
+            console.print(f"TikTok: {len(tt_posts)} posts found")
+
+        if "twitter" in platforms_used:
+            console.print("Scraping Twitter/X via Apify...")
+            from scrapers.apify_scraper import TwitterScraper
+            tw = TwitterScraper(config, since=since_dt)
+            tw_posts = tw.scrape_all_keywords(queries)
+            all_raw.extend(tw_posts)
+            console.print(f"Twitter/X: {len(tw_posts)} posts found")
+
+        if "instagram" in platforms_used:
+            console.print("Scraping Instagram via Apify...")
+            from scrapers.apify_scraper import InstagramScraper
+            ig = InstagramScraper(config, since=since_dt)
+            ig_posts = ig.scrape_all_keywords(queries)
+            all_raw.extend(ig_posts)
+            console.print(f"Instagram: {len(ig_posts)} posts found")
 
         new_count = 0
         for post in all_raw:

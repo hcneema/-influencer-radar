@@ -19,6 +19,21 @@ platforms:
     time_filter: all          # all | year | month | week
     max_results: 100          # per keyword per subreddit
 
+tiktok:
+  enabled: true
+  max_results: 50
+  actor_id: "clockworks/tiktok-scraper"
+
+twitter:
+  enabled: true
+  max_results: 50
+  actor_id: "apidojo/tweet-scraper"
+
+instagram:
+  enabled: true
+  max_results: 50
+  actor_id: "apify/instagram-scraper"
+
 output:
   format: both               # json | markdown | both
   directory: reports/
