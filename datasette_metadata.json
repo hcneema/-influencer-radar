@@ -23,10 +23,8 @@
         "runs": {
           "description": "History of scrape runs"
         }
-      }
-    }
-  },
-  "queries": {
+      },
+      "queries": {
     "posts_with_links": {
       "title": "All Posts — Clickable Links",
       "sql": "SELECT p.title AS Title, '[open](' || p.url || ')' AS Link, a.author_name AS Author, a.author_type AS Type, p.platform AS Platform, p.views AS Views, p.likes AS Likes, p.published_at AS Published, c.technical_depth AS Depth, c.content_type AS ContentType, c.sentiment AS Sentiment FROM posts p LEFT JOIN classifications c USING (platform, post_id) LEFT JOIN authors a USING (platform, author_id) ORDER BY p.published_at DESC"
@@ -58,6 +56,8 @@
     "run_history": {
       "title": "Scrape Run History",
       "sql": "SELECT id, run_at, topic_file, posts_scraped, influencers_found, platforms FROM runs ORDER BY run_at DESC"
+    }
+      }
     }
   },
   "plugins": {
