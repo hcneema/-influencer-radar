@@ -1,6 +1,12 @@
 {
   "title": "Influencer Radar",
   "description": "Social media posts scraped from YouTube and Reddit, classified by topic relevance and engagement",
+  "allow_download": true,
+  "settings": {
+    "allow_facet": "on",
+    "default_page_size": 50,
+    "sql_time_limit_ms": 10000
+  },
   "databases": {
     "influencer_radar": {
       "tables": {
@@ -21,13 +27,21 @@
     }
   },
   "queries": {
+    "posts_with_links": {
+      "title": "All Posts — Clickable Links",
+      "sql": "SELECT p.title AS Title, '[open](' || p.url || ')' AS Link, a.author_name AS Author, a.author_type AS Type, p.platform AS Platform, p.views AS Views, p.likes AS Likes, p.published_at AS Published, c.technical_depth AS Depth, c.content_type AS ContentType, c.sentiment AS Sentiment FROM posts p LEFT JOIN classifications c USING (platform, post_id) LEFT JOIN authors a USING (platform, author_id) ORDER BY p.published_at DESC"
+    },
+    "top_posts_links": {
+      "title": "Top Posts by Engagement — Clickable Links",
+      "sql": "SELECT p.title AS Title, '[open](' || p.url || ')' AS Link, a.author_name AS Author, p.platform AS Platform, (p.views + p.likes) AS Engagement, p.views AS Views, p.likes AS Likes, c.technical_depth AS Depth, c.sentiment AS Sentiment FROM posts p LEFT JOIN classifications c USING (platform, post_id) LEFT JOIN authors a USING (platform, author_id) ORDER BY Engagement DESC LIMIT 50"
+    },
     "top_influencers": {
       "title": "Top Influencers by Engagement",
       "sql": "SELECT a.author_name, a.platform, a.author_type, a.subscriber_count, COUNT(p.post_id) AS posts, SUM(p.views + p.likes) AS total_engagement FROM authors a JOIN posts p USING (platform, author_id) GROUP BY a.platform, a.author_id ORDER BY total_engagement DESC LIMIT 50"
     },
     "deep_technical_posts": {
-      "title": "Deep Technical Posts",
-      "sql": "SELECT p.title, p.url, p.views, p.likes, c.content_type, c.sentiment, a.author_name FROM posts p JOIN classifications c USING (platform, post_id) JOIN authors a USING (platform, author_id) WHERE c.technical_depth = 'deep-technical' ORDER BY p.views DESC"
+      "title": "Deep Technical Posts — Clickable Links",
+      "sql": "SELECT p.title AS Title, '[open](' || p.url || ')' AS Link, a.author_name AS Author, p.views AS Views, p.likes AS Likes, c.content_type AS ContentType, c.sentiment AS Sentiment FROM posts p JOIN classifications c USING (platform, post_id) JOIN authors a USING (platform, author_id) WHERE c.technical_depth = 'deep-technical' ORDER BY p.views DESC"
     },
     "all_classified_posts": {
       "title": "All Posts with Classifications",
