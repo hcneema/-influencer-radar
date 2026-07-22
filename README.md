@@ -7,6 +7,72 @@ A Python CLI that scrapes social media platforms for posts about any technical t
 
 ---
 
+## Viewing Results After a Scrape
+
+After running `main.py` you have three ways to explore the data:
+
+### 1. Generated reports (files in `reports/`)
+- `*_report_*.md` — ranked influencer leaderboard with profile cards
+- `*_influencers_*.json` — structured data for downstream processing
+- `*_trends_*.md` — post volume, sentiment shift, engagement anomalies over time
+
+### 2. CLI query tool (`query.py`)
+Explore the database interactively without writing SQL:
+```bash
+python query.py summary                          # overall stats
+python query.py influencers --top 10             # ranked influencer list
+python query.py influencers --type community     # community only (exclude official brands)
+python query.py posts --category deep-technical  # filter by classification
+python query.py posts --search "pipeline"        # keyword search in title/body
+python query.py anomalies                        # viral/breakout posts by z-score
+python query.py trends --period month            # post volume over time
+python query.py export --author "SomeChannel" --out export.json
+```
+
+### 3. Web UI — Datasette (browser-based table viewer + SQL editor)
+```bash
+datasette db/influencer_radar.db --metadata datasette_metadata.json --open
+```
+Opens `http://localhost:8001` with:
+- **Table browser** — click through posts, authors, classifications
+- **Pre-built queries** — top influencers, deep-technical posts, sentiment by platform
+- **Custom SQL editor** — write any query, export results as CSV or JSON
+- **Dashboard** — `http://localhost:8001/-/dashboards/influencer-overview` — charts for post volume, sentiment breakdown, top authors
+
+Keep the terminal open while using it; `Ctrl+C` to stop.
+
+---
+
+## Official vs Community Accounts
+
+Every author in the database is automatically tagged as either **`official`** (known brand/vendor account) or **`community`** (independent creator). This split appears in all reports and queries so you can compare vendor messaging against organic community discussion.
+
+**How it works:** edit `config/official_accounts.yaml` to list known official accounts before you scrape:
+
+```yaml
+youtube:
+  - id: UC_7eBnRyBqSWZTMSJAf6u3w   # AMD Developer Central
+    name: AMD Developer Central
+
+reddit:
+  - username: AMD
+  - username: AMDOfficial
+```
+
+Any author whose platform ID or username matches an entry gets `author_type=official`; everyone else gets `author_type=community`. You can filter by type in any query:
+
+```bash
+python query.py influencers --type official      # only brand accounts
+python query.py influencers --type community     # only independent creators
+python query.py export --type official --out official_posts.json
+```
+
+To find a YouTube channel ID: go to the channel page, view source, and search for `channelId`. Or use `commentpicker.com/youtube-channel-id.php`.
+
+> **Note:** The default `official_accounts.yaml` is pre-populated with AMD/Xilinx accounts for the HLS topic. Update it when switching to a different research topic.
+
+---
+
 ## How It Works — Full Pipeline
 
 ```
@@ -665,23 +731,9 @@ Every post is classified on three dimensions:
 
 ## Adding Known Official Accounts
 
-Edit `config/official_accounts.yaml` to tag known brand accounts:
+See the **Official vs Community Accounts** section near the top for a full explanation.
 
-```yaml
-youtube:
-  - id: UCZRmgCNaKkFWFxFJBpBQqYg
-    name: AMD (official)
-  - id: UC_7eBnRyBqSWZTMSJAf6u3w
-    name: AMD Developer Central
-
-reddit:
-  - username: AMD
-  - username: Xilinx
-```
-
-To find a YouTube channel ID: go to the channel page, view source, search for `channelId`. Or use a lookup tool like `commentpicker.com/youtube-channel-id.php`.
-
-Posts from listed accounts are tagged `author_type=official` in the DB and appear in a separate section of every report.
+In short: edit `config/official_accounts.yaml`, add YouTube channel IDs and Reddit usernames, then re-run `main.py`. Matched authors are tagged `author_type=official` and appear in a separate section of every report.
 
 ---
 
